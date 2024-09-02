@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: dev.thriving.poc
+testFramework: junit
+sourceLanguage: java
+buildTool: gradle_kotlin
+features: [app-name, gradle, http-client-test, java, java-application, junit, kafka, kafka-streams, logback, micronaut-aot, micronaut-build, micronaut-http-validation, netty-server, properties, readme, serialization-jackson, shade, static-resources, test-resources]

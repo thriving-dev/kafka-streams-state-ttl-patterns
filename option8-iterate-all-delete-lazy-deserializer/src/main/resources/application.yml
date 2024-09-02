@@ -1,0 +1,34 @@
+#Sat Aug 31 14:55:52 UTC 2024
+micronaut:
+  application.name: option8-iterate-all-delete-lazy-deserializer
+  executors:
+    consumer:
+      type: fixed
+      nThreads: 25
+
+
+kafka:
+  enabled: true
+  health:
+    enabled: true
+  bootstrap:
+    servers: localhost:9092
+#  consumers:
+#    default:
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  streams:
+    default:
+      session.timeout.ms: 10000
+      internal.leave.group.on.close: true
+      default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      auto.offset.reset: earliest
+
+endpoints:
+  all:
+    sensitive: false
+
+#logger:
+#  level:
+#    dev.thriving.poc: DEBUG

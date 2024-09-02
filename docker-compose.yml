@@ -1,0 +1,65 @@
+---
+services:
+  broker:
+    image: confluentinc/cp-kafka:7.7.0
+    hostname: broker
+    container_name: broker
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://broker:29092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 30000
+      # Replace CLUSTER_ID with a unique base64 UUID using "bin/kafka-storage.sh random-uuid"
+      # See https://docs.confluent.io/kafka/operations-tools/kafka-tools.html#kafka-storage-sh
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    healthcheck:
+      test: [ "CMD", "/bin/kafka-topics", "--bootstrap-server=localhost:9092", "--list" ]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.7.0
+    hostname: schema-registry
+    container_name: schema-registry
+    depends_on:
+      - broker
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:29092'
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+
+  kafka-create-topics:
+    container_name: kafka-create-topics
+    image: confluentinc/cp-kafka:7.7.0
+    depends_on:
+      broker:
+        condition: service_healthy
+    entrypoint: ''
+    command: /bin/bash -c "echo 'creating topics...'
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=6 --replication-factor=1 --topic=option1-plaintext-input
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=6 --replication-factor=1 --topic=option2-plaintext-input --config cleanup.policy=compact
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option3-plaintext-input
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option4-plaintext-input --config cleanup.policy=compact 
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option5-plaintext-input --config cleanup.policy=compact 
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option6-plaintext-input
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option7-plaintext-input
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option8-plaintext-input
+      "

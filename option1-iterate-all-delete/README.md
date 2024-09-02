@@ -1,8 +1,3 @@
-# kafka-streams-state-ttl-patterns
-
-TODO
-
-
 ## Micronaut 4.6.0 Documentation
 
 - [User Guide](https://docs.micronaut.io/4.6.0/guide/index.html)
