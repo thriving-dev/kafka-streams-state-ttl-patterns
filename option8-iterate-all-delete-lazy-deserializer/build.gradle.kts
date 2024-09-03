@@ -16,9 +16,14 @@ dependencies {
     implementation("io.confluent:kafka-schema-registry-client:7.7.0")
     implementation("io.confluent:kafka-streams-avro-serde:7.7.0")
     implementation("com.fasterxml.uuid:java-uuid-generator:5.1.0")
+
+    implementation(project(":avros"))
+
     compileOnly("io.micronaut:micronaut-http-client")
+
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("org.yaml:snakeyaml")
+
     testImplementation("io.micronaut:micronaut-http-client")
 }
 

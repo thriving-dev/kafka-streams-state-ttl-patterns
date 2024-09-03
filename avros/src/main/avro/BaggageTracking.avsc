@@ -4,6 +4,11 @@
   "namespace": "dev.thriving.poc.avro",
   "fields": [
     {
+      "name": "trackingId",
+      "type": "string",
+      "doc": "A unique identifier for the tracking event (UUID v7)."
+    },
+    {
       "name": "baggageId",
       "type": "string",
       "doc": "A unique identifier for the baggage (UUID v7)."

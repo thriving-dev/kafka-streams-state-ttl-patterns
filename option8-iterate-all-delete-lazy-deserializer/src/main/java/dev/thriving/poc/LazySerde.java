@@ -1,8 +1,6 @@
 package dev.thriving.poc;
 
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import org.apache.avro.specific.SpecificRecord;
+import dev.thriving.poc.avro.BaggageTracking;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
@@ -10,13 +8,12 @@ import org.apache.kafka.common.serialization.Serializer;
 import java.util.Map;
 import java.util.Optional;
 
-public class LazyAvroSerde<T extends SpecificRecord> implements Serde<LazyAvroSerde.Lazy<T>> {
+public class LazySerde<T> implements Serde<LazySerde.Lazy<T>> {
 
-    private final SpecificAvroSerde<T> innerSerde;
+    private final Serde<T> innerSerde;
 
-    public LazyAvroSerde(SchemaRegistryClient client, Map<String, ?> serdeConfig) {
-        innerSerde = new SpecificAvroSerde<>(client);
-        innerSerde.configure(serdeConfig, false);
+    public LazySerde(Serde<T> inner) {
+        innerSerde = inner;
     }
 
     @Override
@@ -39,8 +36,14 @@ public class LazyAvroSerde<T extends SpecificRecord> implements Serde<LazyAvroSe
             this.deserializer = deserializer;
         }
 
+        public Lazy(T value) {
+            this.cachedValue = Optional.of(value);
+            data = null;
+            deserializer = null;
+        }
+
         public T get() {
-            if (!cachedValue.isPresent()) {
+            if (cachedValue.isEmpty()) {
                 cachedValue = Optional.ofNullable(deserializer.deserialize(null, data));
             }
             return cachedValue.orElse(null);
@@ -60,14 +63,4 @@ public class LazyAvroSerde<T extends SpecificRecord> implements Serde<LazyAvroSe
     public void close() {
         innerSerde.close();
     }
-
-//    @Override
-//    public Serializer<Lazy<T>> serializer() {
-//        return this.serializer();
-//    }
-//
-//    @Override
-//    public Deserializer<Lazy<T>> deserializer() {
-//        return this.deserializer();
-//    }
 }

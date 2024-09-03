@@ -62,4 +62,5 @@ services:
       && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option6-plaintext-input
       && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option7-plaintext-input
       && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option8-plaintext-input
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=passenger-baggage-tracking
       "
