@@ -1,0 +1,37 @@
+{
+  "type": "record",
+  "name": "Flight",
+  "namespace": "dev.thriving.poc.avro",
+  "fields": [
+    {
+      "name": "flightNumber",
+      "type": "string",
+      "doc": "The flight number."
+    },
+    {
+      "name": "airline",
+      "type": "string",
+      "doc": "The airline operating the flight."
+    },
+    {
+      "name": "departureAirport",
+      "type": "string",
+      "doc": "The IATA code of the departure airport."
+    },
+    {
+      "name": "arrivalAirport",
+      "type": "string",
+      "doc": "The IATA code of the arrival airport."
+    },
+    {
+      "name": "departureTime",
+      "type": "string",
+      "doc": "The scheduled departure time in ISO 8601 format."
+    },
+    {
+      "name": "arrivalTime",
+      "type": "string",
+      "doc": "The scheduled arrival time in ISO 8601 format."
+    }
+  ]
+}

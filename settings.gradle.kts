@@ -1,7 +1,13 @@
-
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
 
 rootProject.name="kafka-streams-state-ttl-patterns"
 
+include("avros")
 include("option1-iterate-all-delete")
 include("option2-ktable-iterate-all-send-tombstones")
 include("option3-lrucache-compact-delete")

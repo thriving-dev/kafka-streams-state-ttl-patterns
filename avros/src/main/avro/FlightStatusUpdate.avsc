@@ -1,0 +1,50 @@
+{
+  "type": "record",
+  "name": "FlightStatusUpdate",
+  "namespace": "com.example.airport",
+  "fields": [
+    {
+      "name": "flightNumber",
+      "type": "string",
+      "doc": "The flight number."
+    },
+    {
+      "name": "departureDate",
+      "type": "string",
+      "doc": "The date of departure in ISO 8601 format (YYYY-MM-DD)."
+    },
+    {
+      "name": "status",
+      "type": {
+        "type": "enum",
+        "name": "FlightStatus",
+        "symbols": ["ON_TIME", "DELAYED", "CANCELLED", "IN_AIR", "LANDED", "DIVERTED"],
+        "doc": "The current status of the flight."
+      }
+    },
+    {
+      "name": "newDepartureTime",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "The updated departure time in ISO 8601 format if the departure time has changed (optional)."
+    },
+    {
+      "name": "newArrivalTime",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "The updated arrival time in ISO 8601 format if the arrival time has changed (optional)."
+    },
+    {
+      "name": "delayMinutes",
+      "type": ["null", "int"],
+      "default": null,
+      "doc": "The number of minutes the flight is delayed (optional)."
+    },
+    {
+      "name": "remarks",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Any additional remarks or information about the flight status (optional)."
+    }
+  ]
+}

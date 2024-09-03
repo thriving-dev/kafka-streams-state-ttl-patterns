@@ -1,0 +1,60 @@
+{
+  "type": "record",
+  "name": "AirportInfoI18n",
+  "namespace": "com.example.airport",
+  "fields": [
+    {
+      "name": "airportCode",
+      "type": "string",
+      "doc": "The IATA code of the airport."
+    },
+    {
+      "name": "nameEnglish",
+      "type": "string",
+      "doc": "The name of the airport in English."
+    },
+    {
+      "name": "cityEnglish",
+      "type": "string",
+      "doc": "The name of the city where the airport is located in English."
+    },
+    {
+      "name": "countryEnglish",
+      "type": "string",
+      "doc": "The name of the country where the airport is located in English."
+    },
+    {
+      "name": "translations",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "AirportTranslation",
+          "fields": [
+            {
+              "name": "languageCode",
+              "type": "string",
+              "doc": "The ISO 639-1 language code (e.g., 'es' for Spanish, 'fr' for French)."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "doc": "The name of the airport in the specified language."
+            },
+            {
+              "name": "city",
+              "type": "string",
+              "doc": "The name of the city where the airport is located in the specified language."
+            },
+            {
+              "name": "country",
+              "type": "string",
+              "doc": "The name of the country where the airport is located in the specified language."
+            }
+          ]
+        }
+      },
+      "doc": "An array of translations for the airport's name, city, and country in various languages."
+    }
+  ]
+}

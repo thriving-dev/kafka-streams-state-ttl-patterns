@@ -1,0 +1,70 @@
+{
+  "type": "record",
+  "name": "UserFlightBooking",
+  "namespace": "com.example.airport",
+  "fields": [
+    {
+      "name": "bookingId",
+      "type": "string",
+      "doc": "A unique identifier for the booking (UUID v7)."
+    },
+    {
+      "name": "userId",
+      "type": "string",
+      "doc": "A unique identifier for the user."
+    },
+    {
+      "name": "flightNumber",
+      "type": "string",
+      "doc": "The flight number of the booked flight."
+    },
+    {
+      "name": "departureDate",
+      "type": "string",
+      "doc": "The date of departure in ISO 8601 format (YYYY-MM-DD)."
+    },
+    {
+      "name": "seatNumber",
+      "type": "string",
+      "doc": "The seat number assigned to the traveler."
+    },
+    {
+      "name": "reservationCode",
+      "type": "string",
+      "doc": "The reservation code (PNR) associated with the booking."
+    },
+    {
+      "name": "email",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "The traveler's email address (optional)."
+    },
+    {
+      "name": "phoneNumber",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "The traveler's phone number (optional)."
+    },
+    {
+      "name": "deviceID",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "The device ID for the flight tracker app (optional)."
+    },
+    {
+      "name": "preferredLanguage",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "The user's preferred language for notifications, using ISO 639-1 codes (optional)."
+    },
+    {
+      "name": "contactPreference",
+      "type": {
+        "type": "enum",
+        "name": "ContactPreference",
+        "symbols": ["EMAIL", "SMS", "PUSH_NOTIFICATION"],
+        "doc": "The user's preferred method of contact."
+      }
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "type": "record",
+  "name": "DepartureStatusUpdate",
+  "namespace": "dev.thriving.poc.avro",
+  "fields": [
+    {
+      "name": "flightNumber",
+      "type": "string",
+      "doc": "The flight number."
+    },
+    {
+      "name": "departureDate",
+      "type": "string",
+      "doc": "The date of departure in ISO 8601 format (YYYY-MM-DD)."
+    },
+    {
+      "name": "status",
+      "type": {
+        "type": "enum",
+        "name": "FlightStatus",
+        "symbols": ["ON_TIME", "DELAYED", "CANCELLED", "BOARDING", "DEPARTED"],
+        "doc": "The current status of the flight."
+      }
+    },
+    {
+      "name": "baggageDropDesk",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "The baggage drop or check-in desk number(s) (optional)."
+    },
+    {
+      "name": "delayMinutes",
+      "type": ["null", "int"],
+      "default": null,
+      "doc": "The number of minutes the flight is delayed (optional)."
+    },
+    {
+      "name": "newGate",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "The updated gate number if the gate has changed (optional)."
+    },
+    {
+      "name": "newDepartureTime",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "The updated departure time in ISO 8601 format if the departure time has changed (optional)."
+    }
+  ]
+}

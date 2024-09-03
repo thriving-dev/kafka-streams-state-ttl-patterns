@@ -1,0 +1,54 @@
+{
+  "type": "record",
+  "name": "BaggageTracking",
+  "namespace": "dev.thriving.poc.avro",
+  "fields": [
+    {
+      "name": "baggageId",
+      "type": "string",
+      "doc": "A unique identifier for the baggage (UUID v7)."
+    },
+    {
+      "name": "flightNumber",
+      "type": "string",
+      "doc": "The flight number of the original flight associated with the baggage."
+    },
+    {
+      "name": "departureDate",
+      "type": "string",
+      "doc": "The date of departure of the original flight in ISO 8601 format (YYYY-MM-DD)."
+    },
+    {
+      "name": "scanTime",
+      "type": "string",
+      "doc": "The time when the baggage is scanned in ISO 8601 format."
+    },
+    {
+      "name": "airportCode",
+      "type": "string",
+      "doc": "The IATA code of the airport where the baggage is scanned."
+    },
+    {
+      "name": "location",
+      "type": "string",
+      "doc": "The specific location within the airport where the baggage is scanned (e.g., bag drop, loading, unloading, baggage belt)."
+    },
+    {
+      "name": "status",
+      "type": {
+        "type": "enum",
+        "name": "BaggageStatus",
+        "symbols": [
+          "DROPPED_OFF",
+          "LOADED_ON_FLIGHT",
+          "UNLOADED_FROM_FLIGHT",
+          "IN_TRANSIT_TO_CONNECTION",
+          "LOADED_ON_CONNECTION_FLIGHT",
+          "UNLOADED_FROM_CONNECTION_FLIGHT",
+          "ON_BAGGAGE_BELT"
+        ],
+        "doc": "The current status of the baggage."
+      }
+    }
+  ]
+}

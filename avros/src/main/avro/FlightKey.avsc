@@ -1,0 +1,17 @@
+{
+  "type": "record",
+  "name": "FlightKey",
+  "namespace": "dev.thriving.poc.avro",
+  "fields": [
+    {
+      "name": "flightNumber",
+      "type": "string",
+      "doc": "The flight number."
+    },
+    {
+      "name": "departureDate",
+      "type": "string",
+      "doc": "The date of departure in ISO 8601 format (YYYY-MM-DD)."
+    }
+  ]
+}
