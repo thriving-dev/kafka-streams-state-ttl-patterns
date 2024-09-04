@@ -1,8 +1,13 @@
 {
   "type": "record",
   "name": "FlightStatusUpdate",
-  "namespace": "com.example.airport",
+  "namespace": "dev.thriving.poc.avro",
   "fields": [
+    {
+      "name": "eventId",
+      "type": "string",
+      "doc": "A unique identifier for the flight status update event."
+    },
     {
       "name": "flightNumber",
       "type": "string",
@@ -15,12 +20,8 @@
     },
     {
       "name": "status",
-      "type": {
-        "type": "enum",
-        "name": "FlightStatus",
-        "symbols": ["ON_TIME", "DELAYED", "CANCELLED", "IN_AIR", "LANDED", "DIVERTED"],
-        "doc": "The current status of the flight."
-      }
+      "type": "dev.thriving.poc.avro.FlightStatus",
+      "doc": "The current status of the flight, referencing the FlightStatus enum."
     },
     {
       "name": "newDepartureTime",

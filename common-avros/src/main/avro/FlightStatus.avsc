@@ -1,0 +1,14 @@
+{
+  "type": "enum",
+  "name": "FlightStatus",
+  "namespace": "dev.thriving.poc.avro",
+  "symbols": [
+    "ON_TIME",
+    "DELAYED",
+    "CANCELLED",
+    "IN_AIR",
+    "LANDED",
+    "DIVERTED"
+  ],
+  "doc": "The current status of the flight."
+}

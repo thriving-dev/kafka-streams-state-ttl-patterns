@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "UserFlightBooking",
-  "namespace": "com.example.airport",
+  "namespace": "dev.thriving.poc.avro",
   "fields": [
     {
       "name": "bookingId",
@@ -32,6 +32,15 @@
       "name": "reservationCode",
       "type": "string",
       "doc": "The reservation code (PNR) associated with the booking."
+    },
+    {
+      "name": "flightClass",
+      "type": {
+        "type": "enum",
+        "name": "FlightClass",
+        "symbols": ["ECONOMY", "BUSINESS", "FIRST"],
+        "doc": "The flight class (economy, business, first)."
+      }
     },
     {
       "name": "email",

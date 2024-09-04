@@ -32,6 +32,23 @@
       "name": "arrivalTime",
       "type": "string",
       "doc": "The scheduled arrival time in ISO 8601 format."
+    },
+    {
+      "name": "flightCategory",
+      "type": {
+        "type": "enum",
+        "name": "FlightCategory",
+        "symbols": [
+          "PASSENGER",
+          "FREIGHT",
+          "GOVERNMENT",
+          "PRIVATE_JET",
+          "MILITARY",
+          "EMERGENCY",
+          "OTHER"
+        ],
+        "doc": "The category or type of flight."
+      }
     }
   ]
 }

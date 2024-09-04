@@ -6,19 +6,27 @@ plugins {
 }
 
 dependencies {
+    annotationProcessor("org.projectlombok:lombok:1.18.34")
     annotationProcessor("io.micronaut:micronaut-http-validation")
     annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
     implementation("io.micronaut:micronaut-management")
     implementation("io.micronaut.kafka:micronaut-kafka")
     implementation("io.micronaut.kafka:micronaut-kafka-streams")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
+    implementation("io.confluent:kafka-schema-registry-client:7.7.0")
+    implementation("io.confluent:kafka-streams-avro-serde:7.7.0")
     implementation("org.apache.kafka:kafka-clients")
+
+    implementation(project(":common-avros"))
+
     compileOnly("io.micronaut:micronaut-http-client")
+    compileOnly("org.projectlombok:lombok:1.18.34")
+
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("org.yaml:snakeyaml")
+
     testImplementation("io.micronaut:micronaut-http-client")
 }
-
 
 application {
     mainClass = "dev.thriving.poc.Application"
@@ -27,7 +35,6 @@ java {
     sourceCompatibility = JavaVersion.toVersion("21")
     targetCompatibility = JavaVersion.toVersion("21")
 }
-
 
 graalvmNative.toolchainDetection = false
 
@@ -55,9 +62,6 @@ micronaut {
     }
 }
 
-
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
     jdkVersion = "21"
 }
-
-

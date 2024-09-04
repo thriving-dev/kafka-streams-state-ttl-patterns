@@ -54,13 +54,7 @@ services:
         condition: service_healthy
     entrypoint: ''
     command: /bin/bash -c "echo 'creating topics...'
-      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=6 --replication-factor=1 --topic=option1-plaintext-input
-      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=6 --replication-factor=1 --topic=option2-plaintext-input --config cleanup.policy=compact
-      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option3-plaintext-input
-      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option4-plaintext-input --config cleanup.policy=compact 
-      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option5-plaintext-input --config cleanup.policy=compact 
-      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option6-plaintext-input
-      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option7-plaintext-input
-      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=option8-plaintext-input
-      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=1 --replication-factor=1 --topic=passenger-baggage-tracking
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=4 --replication-factor=1 --topic=baggage-tracking
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=4 --replication-factor=1 --topic=user-flight-booking
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=4 --replication-factor=1 --topic=flight --config cleanup.policy=compact
       "

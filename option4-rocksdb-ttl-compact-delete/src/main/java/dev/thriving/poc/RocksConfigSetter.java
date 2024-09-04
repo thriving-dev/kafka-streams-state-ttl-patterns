@@ -1,13 +1,12 @@
 package dev.thriving.poc;
 
-import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.state.RocksDBConfigSetter;
 import org.apache.kafka.streams.state.internals.BlockBasedTableConfigWithAccessibleCache;
-import org.rocksdb.Cache;
 import org.rocksdb.CompactionStyle;
 import org.rocksdb.Options;
+
+import java.util.Map;
 
 @Slf4j
 public class RocksConfigSetter implements RocksDBConfigSetter {
@@ -43,13 +42,6 @@ public class RocksConfigSetter implements RocksDBConfigSetter {
 
         BlockBasedTableConfigWithAccessibleCache tableConfig =
                 (BlockBasedTableConfigWithAccessibleCache) options.tableFormatConfig();
-//        if (serverConfig.getGlobalRocksdbBlockCache() != null) {
-//            // Streams provisions a *NON-shared* 50MB cache for every RocksDB instance. Need
-//            // to .close() it to avoid leaks so that we can provide a global one.
-//            Cache oldCache = tableConfig.blockCache();
-//            tableConfig.setBlockCache(serverConfig.getGlobalRocksdbBlockCache());
-//            oldCache.close();
-//        }
 
         tableConfig.setOptimizeFiltersForMemory(OPTIMIZE_FILTERS_FOR_MEMORY);
         tableConfig.setBlockSize(BLOCK_SIZE);
@@ -58,26 +50,11 @@ public class RocksConfigSetter implements RocksDBConfigSetter {
         options.setOptimizeFiltersForHits(OPTIMIZE_FILTERS_FOR_HITS);
         options.setCompactionStyle(CompactionStyle.LEVEL);
 
-//        options.setIncreaseParallelism(serverConfig.getRocksDBCompactionThreads());
-
-        // Memtable size
-//        options.setWriteBufferSize(
-//                isCoreStore(storeName) ? serverConfig.getCoreMemtableSize() : serverConfig.getTimerMemtableSize());
-
-//        if (serverConfig.getGlobalRocksdbWriteBufferManager() != null) {
-//            options.setWriteBufferManager(serverConfig.getGlobalRocksdbWriteBufferManager());
-//        }
-        // Streams default is 3
-        options.setMaxWriteBufferNumber(5);
+        // Streams default
+        options.setMaxWriteBufferNumber(3);
 
         // TTL
         options.setTtl(60); // 60s
-
-        // Future Work: Enable larger scaling by using Partitioned Index Filters
-        // https://github.com/facebook/rocksdb/wiki/Partitioned-Index-Filters
-        //
-        // We should do scale testing with the LH Canary to determine whether that should be enabled
-        // by default or as a configuration.
     }
 
     @Override

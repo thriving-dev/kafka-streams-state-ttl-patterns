@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "AirportInfoI18n",
-  "namespace": "com.example.airport",
+  "namespace": "dev.thriving.poc.avro",
   "fields": [
     {
       "name": "airportCode",

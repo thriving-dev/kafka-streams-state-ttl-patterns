@@ -20,10 +20,11 @@ kafka:
   streams:
     default:
       rocksdb.config.setter: dev.thriving.poc.RocksConfigSetter
+      schema.registry.url: http://localhost:8081
       session.timeout.ms: 10000
       internal.leave.group.on.close: true
       default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-      default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      default.value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
       auto.offset.reset: earliest
 
 endpoints:

@@ -6,6 +6,7 @@ plugins {
 }
 
 dependencies {
+    annotationProcessor("org.projectlombok:lombok:1.18.34")
     annotationProcessor("io.micronaut:micronaut-http-validation")
     annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
     implementation("io.micronaut:micronaut-management")
@@ -13,9 +14,13 @@ dependencies {
     implementation("io.micronaut.kafka:micronaut-kafka-streams")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
     implementation("org.apache.kafka:kafka-clients")
+
     compileOnly("io.micronaut:micronaut-http-client")
+    compileOnly("org.projectlombok:lombok:1.18.34")
+
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("org.yaml:snakeyaml")
+
     testImplementation("io.micronaut:micronaut-http-client")
 }
 

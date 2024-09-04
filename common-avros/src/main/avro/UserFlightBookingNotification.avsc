@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "UserFlightBookingNotification",
-  "namespace": "com.example.airport",
+  "namespace": "dev.thriving.poc.avro",
   "fields": [
     {
       "name": "notificationId",
@@ -32,6 +32,15 @@
       "name": "reservationCode",
       "type": "string",
       "doc": "The reservation code (PNR) associated with the booking."
+    },
+    {
+      "name": "flightClass",
+      "type": {
+        "type": "enum",
+        "name": "FlightClass",
+        "symbols": ["ECONOMY", "BUSINESS", "FIRST"],
+        "doc": "The flight class (economy, business, first)."
+      }
     },
     {
       "name": "email",
@@ -68,12 +77,8 @@
     },
     {
       "name": "flightStatus",
-      "type": {
-        "type": "enum",
-        "name": "FlightStatus",
-        "symbols": ["ON_TIME", "DELAYED", "CANCELLED", "IN_AIR", "LANDED", "DIVERTED"],
-        "doc": "The current status of the flight."
-      }
+      "type": "dev.thriving.poc.avro.FlightStatus",
+      "doc": "The current status of the flight, referencing the FlightStatus enum."
     },
     {
       "name": "newDepartureTime",
