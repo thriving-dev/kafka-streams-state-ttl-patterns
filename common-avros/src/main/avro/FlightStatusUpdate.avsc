@@ -20,7 +20,7 @@
     },
     {
       "name": "status",
-      "type": "dev.thriving.poc.avro.FlightStatus",
+      "type": "dev.thriving.poc.avro.FlightStatusEnum",
       "doc": "The current status of the flight, referencing the FlightStatus enum."
     },
     {

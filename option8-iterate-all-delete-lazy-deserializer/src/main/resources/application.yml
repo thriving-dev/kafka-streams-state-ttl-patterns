@@ -6,17 +6,12 @@ micronaut:
       type: fixed
       nThreads: 25
 
-
 kafka:
   enabled: true
   health:
     enabled: true
   bootstrap:
     servers: localhost:9092
-#  consumers:
-#    default:
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   streams:
     default:
       session.timeout.ms: 10000
@@ -28,7 +23,3 @@ kafka:
 endpoints:
   all:
     sensitive: false
-
-#logger:
-#  level:
-#    dev.thriving.poc: DEBUG

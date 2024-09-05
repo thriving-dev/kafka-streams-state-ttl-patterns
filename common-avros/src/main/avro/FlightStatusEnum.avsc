@@ -1,6 +1,6 @@
 {
   "type": "enum",
-  "name": "FlightStatus",
+  "name": "FlightStatusEnum",
   "namespace": "dev.thriving.poc.avro",
   "symbols": [
     "ON_TIME",

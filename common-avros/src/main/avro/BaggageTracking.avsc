@@ -50,7 +50,8 @@
           "IN_TRANSIT_TO_CONNECTION",
           "LOADED_ON_CONNECTION_FLIGHT",
           "UNLOADED_FROM_CONNECTION_FLIGHT",
-          "ON_BAGGAGE_BELT"
+          "ON_BAGGAGE_BELT",
+          "HOLD_NOT_COLLECTED"
         ],
         "doc": "The current status of the baggage."
       }

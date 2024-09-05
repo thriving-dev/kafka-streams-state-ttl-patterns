@@ -1,5 +1,7 @@
 package dev.thriving.poc;
 
+import dev.thriving.poc.avro.Flight;
+import dev.thriving.poc.avro.FlightKey;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.processor.PunctuationType;
@@ -14,21 +16,23 @@ import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ProcessorWithTTLCleanup extends ContextualProcessor<String, String, String, String> {
+public class ProcessorWithTTLCleanup extends ContextualProcessor<FlightKey, Flight, FlightKey, Flight> {
 
     private static Logger LOG = LoggerFactory.getLogger(ProcessorWithTTLCleanup.class);
 
     private static final String DELIMITER = "_";
 
-    private KeyValueStore<String, String> store;
+    private KeyValueStore<FlightKey, Flight> store;
     private KeyValueStore<String, String> storeDeleteAt;
 
     @Override
-    public void init(ProcessorContext<String, String> context) {
+    public void init(ProcessorContext<FlightKey, Flight> context) {
         super.init(context);
         store = context.getStateStore(KStreamsTopologyFactory.STATE_STORE);
         storeDeleteAt = context.getStateStore(KStreamsTopologyFactory.STATE_STORE_DELETION_IDX);
@@ -36,48 +40,50 @@ public class ProcessorWithTTLCleanup extends ContextualProcessor<String, String,
         context.schedule(Duration.ofSeconds(10), PunctuationType.WALL_CLOCK_TIME, timestamp -> {
             LOG.info("@{} punctuator run for task: {}", timestamp, context.taskId());
             ArrayList<String> keysToRemove = new ArrayList<>();
-            String yesterday = dayOfEpochMilli(timestamp - Duration.ofHours(24).toMillis());
+            String expireFlightsWithDepartureDate2dAgo = DateTimeFormatter.ISO_LOCAL_DATE.format(
+                    Instant.ofEpochMilli(timestamp - Duration.ofHours(48).toMillis()).atZone(ZoneOffset.UTC));
             try (StringSerializer stringSerializer = new StringSerializer()) {
-                try (KeyValueIterator<String, String> iter = storeDeleteAt.prefixScan(yesterday, stringSerializer)) {
+                try (KeyValueIterator<String, String> iter = storeDeleteAt.prefixScan(expireFlightsWithDepartureDate2dAgo, stringSerializer)) {
                     iter.forEachRemaining(kv -> keysToRemove.add(kv.key));
                 }
             }
             keysToRemove.forEach(timestampedKey -> {
-                String key = timestampedKey.substring(timestampedKey.indexOf(DELIMITER) + 1);
+                FlightKey key = fromStringKeyPrefixedWithDate(timestampedKey);
                 LOG.debug("[{}] evicting by idx: {} => key: {}", context.taskId(), timestampedKey, key);
                 store.delete(key);
                 storeDeleteAt.delete(timestampedKey);
             });
 
-            ArrayList<String> knownKeys = new ArrayList<>();
-            try (KeyValueIterator<String, String> iter = store.all()) {
+            ArrayList<Object> knownKeys = new ArrayList<>();
+            try (KeyValueIterator<FlightKey, Flight> iter = store.all()) {
                 iter.forEachRemaining(kv -> {
                     knownKeys.add(kv.key);
                 });
             }
-            LOG.info("@{} [{}] punctuator run, known keys: {}", timestamp, context.taskId(), knownKeys);
+            LOG.info("@{} [{}] punctuator run, {} known keys: {}", timestamp, context.taskId(), knownKeys.size(), knownKeys);
         });
     }
 
-    private static String dayOfEpochMilli(long timestamp) {
-        Instant instant = Instant.ofEpochMilli(timestamp);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd").withZone(ZoneId.systemDefault());
-        String day = formatter.format(instant);
-        return day;
-    }
-
     @Override
-    public void process(Record<String, String> record) {
+    public void process(Record<FlightKey, Flight> record) {
         if (record.value() == null) {
             LOG.debug("[{}] deleting record by key {}", context().taskId(), record.key());
             store.delete(record.key());
         } else {
             LOG.debug("[{}] persisting record {}:{}", context().taskId(), record.key(), record.value());
             store.put(record.key(), record.value());
-            String day = dayOfEpochMilli(context().currentStreamTimeMs());
-            String keyPrefixedwithTimestamp = day + DELIMITER + record.key();
-            LOG.debug("[{}] persisting to delete-at store with key {}", context().taskId(), keyPrefixedwithTimestamp);
-            storeDeleteAt.put(keyPrefixedwithTimestamp, ""); // write record with the key prefixed by timestamp + empty string value
+            String stringKeyPrefixedWithDate = toStringKeyPrefixedWithDate(record.key());
+            LOG.debug("[{}] persisting to delete-at store with key {}", context().taskId(), stringKeyPrefixedWithDate);
+            storeDeleteAt.put(stringKeyPrefixedWithDate, ""); // write record with the key prefixed by timestamp + empty string value
         }
+    }
+
+    private static String toStringKeyPrefixedWithDate(FlightKey key) {
+        return key.getDepartureDate() + DELIMITER + key.getFlightNumber();
+    }
+
+    private static FlightKey fromStringKeyPrefixedWithDate(String key) {
+        String[] parts = key.split(DELIMITER);
+        return FlightKey.newBuilder().setDepartureDate(parts[0]).setFlightNumber(parts[1]).build();
     }
 }

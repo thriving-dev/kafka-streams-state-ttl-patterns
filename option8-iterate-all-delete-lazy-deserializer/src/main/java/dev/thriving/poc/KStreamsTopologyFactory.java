@@ -32,7 +32,6 @@ public class KStreamsTopologyFactory {
         Serde<String> stringSerde = Serdes.String();
         SpecificAvroSerde<BaggageTracking>  baggageTrackingSerde = new SpecificAvroSerde<>();
         baggageTrackingSerde.configure(serdeConfig, false);
-//        LazyAvroSerde<BaggageTracking>  lazyBaggageTrackingSerde = new LazyAvroSerde<>(baggageTrackingSerde);
         LazySerde<BaggageTracking>  lazyBaggageTrackingSerde = new LazySerde<>(baggageTrackingSerde);
 
         builder.addStateStore(Stores.keyValueStoreBuilder(

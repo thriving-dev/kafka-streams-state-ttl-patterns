@@ -6,29 +6,21 @@ micronaut:
       type: fixed
       nThreads: 25
 
-
 kafka:
   enabled: true
   health:
     enabled: true
   bootstrap:
     servers: localhost:9092
-#  consumers:
-#    default:
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   streams:
     default:
+      schema.registry.url: http://localhost:8081
       session.timeout.ms: 10000
       internal.leave.group.on.close: true
       default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-      default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      default.value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
       auto.offset.reset: earliest
 
 endpoints:
   all:
     sensitive: false
-
-#logger:
-#  level:
-#    dev.thriving.poc: DEBUG

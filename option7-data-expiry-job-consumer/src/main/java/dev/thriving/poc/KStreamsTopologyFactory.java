@@ -1,36 +1,49 @@
 package dev.thriving.poc;
 
+import dev.thriving.poc.avro.Flight;
+import dev.thriving.poc.avro.FlightKey;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.micronaut.configuration.kafka.streams.ConfiguredStreamBuilder;
 import io.micronaut.context.annotation.Factory;
 import jakarta.inject.Singleton;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Named;
+import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.Stores;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
+import java.util.Map;
+
 @Factory
+@Slf4j
 public class KStreamsTopologyFactory {
 
-    private static Logger LOG = LoggerFactory.getLogger(KStreamsTopologyFactory.class);
-
-    private static final String INPUT_TOPIC = "option7-plaintext-input";
-    static final String STATE_STORE = "some-store";
+    private static final String INPUT_TOPIC = "flight";
+    static final String STATE_STORE = "flights";
 
     @Singleton
-    KStream<String, String> exampleStream(ConfiguredStreamBuilder builder) {
-        Serde<String> stringSerde = Serdes.String();
-        builder.addStateStore(Stores.keyValueStoreBuilder(
-                Stores.persistentKeyValueStore(STATE_STORE),
-                stringSerde,
-                stringSerde
-        ));
+    KStream<FlightKey, Flight> exampleStream(ConfiguredStreamBuilder builder) {
+        final Map<String, String> serdeConfig = Collections.singletonMap("schema.registry.url", "http://localhost:8081");
 
-        KStream<String, String> stream = builder.<String, String>stream(INPUT_TOPIC);
+        SpecificAvroSerde<FlightKey> flightKeySerde = new SpecificAvroSerde<>();
+        flightKeySerde.configure(serdeConfig, true);
+        SpecificAvroSerde<Flight> flightSerde = new SpecificAvroSerde<>();
+        flightSerde.configure(serdeConfig, false);
 
-        stream.peek((k, v) -> LOG.info("peek {}:{}", k, v))
-                .process(MyProcessor::new, STATE_STORE);
+        KStream<FlightKey, Flight> stream = builder.stream(INPUT_TOPIC);
+
+        stream.peek((k, v) -> log.info("peek {}:{}", k, v))
+                .toTable(Named.as("flights"),
+                        Materialized.<FlightKey, Flight, KeyValueStore<Bytes, byte[]>>as(STATE_STORE)
+                                .withKeySerde(flightKeySerde).withValueSerde(flightSerde)
+                );
 
         return stream;
     }
