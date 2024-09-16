@@ -5,23 +5,21 @@ import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.micronaut.configuration.kafka.streams.ConfiguredStreamBuilder;
 import io.micronaut.context.annotation.Factory;
 import jakarta.inject.Singleton;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.state.Stores;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Factory
 public class KStreamsTopologyFactory {
 
-    private static Logger LOG = LoggerFactory.getLogger(KStreamsTopologyFactory.class);
-
-    private static final String INPUT_TOPIC = "passenger-baggage-tracking";
+    private static final String INPUT_TOPIC = "baggage-tracking";
     static final String STATE_STORE = "baggage-tracking";
 
     @Singleton
@@ -42,7 +40,7 @@ public class KStreamsTopologyFactory {
 
         KStream<String, BaggageTracking> stream = builder.stream(INPUT_TOPIC, Consumed.with(stringSerde, baggageTrackingSerde));
 
-        stream.peek((k, v) -> LOG.info("peek {}:{}", k, v))
+        stream.peek((k, v) -> log.info("peek {}:{}", k, v))
                 .process(ProcessorWithTTLCleanup::new, STATE_STORE);
 
         return stream;

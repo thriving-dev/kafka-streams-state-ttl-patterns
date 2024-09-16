@@ -1,8 +1,4 @@
-# pattern8-lazy-value-deserializer
-
-echo "$(uuid7):$(echo '{"trackingId": "123e4567-e89b-12d3-a456-426614174000", "baggageId": "123e4567-e89b-12d3-a456-426614174001", "flightNumber": "AA123", "departureDate": "2024-09-04", "scanTime": "2024-09-04T10:15:30Z", "airportCode": "JFK", "location": "LOADING", "status": "LOADED_ON_FLIGHT"}' | kcat -b localhost:9092 -r http://localhost:8081 -t passenger-baggage-tracking -s value=avro -r value=../avros/src/main/avro/BaggageTracking.avsc)" | kcat -P -b localhost:9092 -t passenger-baggage-tracking -K:
-
-docker run -it --rm confluentinc/cp-schema-registry:7.7.0 kafka-avro-console-producer
+# pattern6-lazy-value-deserializer
 
 ## Micronaut 4.6.0 Documentation
 

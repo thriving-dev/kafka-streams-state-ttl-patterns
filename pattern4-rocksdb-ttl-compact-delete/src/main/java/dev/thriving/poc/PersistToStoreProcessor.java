@@ -2,20 +2,20 @@ package dev.thriving.poc;
 
 import dev.thriving.poc.avro.BaggageTracking;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.header.Headers;
+import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.ArrayList;
 
 @Slf4j
-public class ProcessorWithStoreKeysLogging extends ContextualProcessor<String, BaggageTracking, String, BaggageTracking> {
+public class PersistToStoreProcessor extends ContextualProcessor<String, BaggageTracking, String, BaggageTracking> {
 
     private KeyValueStore<String, BaggageTracking> store;
 
@@ -43,7 +43,16 @@ public class ProcessorWithStoreKeysLogging extends ContextualProcessor<String, B
             log.debug("persisting record {}:{}", record.key(), record.value());
             store.put(record.key(), record.value());
         }
-        context().forward(record);
+        safeForward(context(), record);
+    }
+
+    public static <K, V> void safeForward(ProcessorContext<K, V> context, Record<K, V> record) {
+        // Defensive copy of headers to avoid shared references and side effects
+        Headers newHeaders = new RecordHeaders(record.headers());
+
+        // Create a new Record with the copied headers and forward it
+        Record<K, V> newRecord = new Record<>(record.key(), record.value(), record.timestamp(), newHeaders);
+        context.forward(newRecord);
     }
 
 }

@@ -1,7 +1,7 @@
 ---
 services:
   broker:
-    image: confluentinc/cp-kafka:7.7.0
+    image: confluentinc/cp-kafka:7.7.1
     hostname: broker
     container_name: broker
     ports:
@@ -34,7 +34,7 @@ services:
       retries: 10
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:7.7.0
+    image: confluentinc/cp-schema-registry:7.7.1
     hostname: schema-registry
     container_name: schema-registry
     depends_on:
@@ -48,13 +48,13 @@ services:
 
   kafka-create-topics:
     container_name: kafka-create-topics
-    image: confluentinc/cp-kafka:7.7.0
+    image: confluentinc/cp-kafka:7.7.1
     depends_on:
       broker:
         condition: service_healthy
     entrypoint: ''
     command: /bin/bash -c "echo 'creating topics...'
-      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=4 --replication-factor=1 --topic=baggage-tracking
-      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=4 --replication-factor=1 --topic=user-flight-booking
-      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=4 --replication-factor=1 --topic=flight --config cleanup.policy=compact
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=6 --replication-factor=1 --topic=baggage-tracking
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=6 --replication-factor=1 --topic=user-flight-booking
+      && /bin/kafka-topics --bootstrap-server=broker:29092 --create --partitions=6 --replication-factor=1 --topic=flight --config cleanup.policy=compact
       "

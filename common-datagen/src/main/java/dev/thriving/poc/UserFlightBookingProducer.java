@@ -2,7 +2,9 @@ package dev.thriving.poc;
 
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedEpochGenerator;
-import dev.thriving.poc.avro.*;
+import dev.thriving.poc.avro.ContactPreference;
+import dev.thriving.poc.avro.FlightClass;
+import dev.thriving.poc.avro.UserFlightBooking;
 import dev.thriving.poc.utils.AdjustableUUIDClock;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;

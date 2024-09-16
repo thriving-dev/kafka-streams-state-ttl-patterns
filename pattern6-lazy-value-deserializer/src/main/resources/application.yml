@@ -1,6 +1,6 @@
 #Sat Aug 31 14:55:52 UTC 2024
 micronaut:
-  application.name: pattern8-lazy-value-deserializer
+  application.name: pattern6-lazy-value-deserializer
   executors:
     consumer:
       type: fixed

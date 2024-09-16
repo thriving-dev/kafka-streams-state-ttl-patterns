@@ -3,6 +3,7 @@ package dev.thriving.poc;
 import dev.thriving.poc.avro.Flight;
 import dev.thriving.poc.avro.FlightKey;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -11,8 +12,6 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -24,38 +23,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+@Slf4j
 public class StateStoreDateEvictionJob {
 
-    private static Logger log = LoggerFactory.getLogger(StateStoreDateEvictionJob.class);
+    private static String CHANGELOG_TOPIC = "pattern7-data-expiry-job-consumer-flights-changelog"; // Replace with your topic name
+    private static String ORIGINAL_TOPIC = "flight"; // Replace with your topic name
 
     public static void main(String[] args) {
-        String topic = "pattern7-data-expiry-job-consumer-flights-changelog"; // Replace with your topic name
-        String destinationTopic = "flight"; // Replace with your topic name
-
-        // Configure Kafka Consumer
-        Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"); // Replace with your Kafka broker
-        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081"); // Replace with your Schema registry
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "offset-checker-group");
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer");
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer");
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-
-        // Configure Kafka Producer
-        Properties producerProps = new Properties();
-        producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"); // Replace with your Kafka broker
-        producerProps.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081"); // Replace with your Kafka broker
-        producerProps.put(ProducerConfig.CLIENT_ID_CONFIG, "state-store-eviction-tombstone-producer");
-        producerProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer");
-        producerProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer");
-
-
-        try (KafkaConsumer<FlightKey, Flight> consumer = new KafkaConsumer<>(props);
-             KafkaProducer<FlightKey, Flight> producer = new KafkaProducer<>(producerProps)) {
+        try (KafkaConsumer<FlightKey, Flight> consumer = new KafkaConsumer<>(consumerProps());
+             KafkaProducer<FlightKey, Flight> producer = new KafkaProducer<>(producerProps())) {
             // Get partitions for the topic
             List<TopicPartition> partitions = new ArrayList<>( // we need a mutable list
-                    consumer.partitionsFor(topic).stream()
+                    consumer.partitionsFor(CHANGELOG_TOPIC).stream()
                             .map(info -> new TopicPartition(info.topic(), info.partition()))
                             .toList()
             );
@@ -84,12 +63,11 @@ public class StateStoreDateEvictionJob {
                     log.debug("Consumed message: Key = {}, Value = {}, Partition = {}, Offset = {}",
                             record.key(), record.value(), record.partition(), record.offset());
 
-                    long expireFlightsArrivedBefore = Instant.now().minus(Duration.ofHours(12)).toEpochMilli();
-                    if (record.value() != null && parseToEpochMilli(record.value().getArrivalTime()) < expireFlightsArrivedBefore) {
+                    if (record.value() != null && hasExpired(record)) {
                         log.debug("Flight arrivalTime is 6h in the past, forwarding tombstone: Key = {}", record.key());
                         // Option: depending on the topic, partitioning concept, you might want to set the partition, or partitioner to be used
                         ProducerRecord<FlightKey, Flight> producerRecord = new ProducerRecord<>(
-                                destinationTopic, record.key(), null);
+                                ORIGINAL_TOPIC, record.key(), null);
                         producer.send(producerRecord);
                     }
 
@@ -120,6 +98,33 @@ public class StateStoreDateEvictionJob {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static boolean hasExpired(ConsumerRecord<FlightKey, Flight> record) {
+        long expireFlightsArrivedBefore = Instant.now().minus(Duration.ofHours(12)).toEpochMilli();
+        return parseToEpochMilli(record.value().getArrivalTime()) < expireFlightsArrivedBefore;
+    }
+
+    private static Properties producerProps() {
+        Properties producerProps = new Properties();
+        producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"); // Replace with your Kafka broker
+        producerProps.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081"); // Replace with your Kafka broker
+        producerProps.put(ProducerConfig.CLIENT_ID_CONFIG, "state-store-eviction-tombstone-producer");
+        producerProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer");
+        producerProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer");
+        return producerProps;
+    }
+
+    private static Properties consumerProps() {
+        Properties props = new Properties();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092"); // Replace with your Kafka broker
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081"); // Replace with your Schema registry
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "offset-checker-group");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer");
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+        return props;
     }
 
     private static long parseToEpochMilli(String departureTime) {

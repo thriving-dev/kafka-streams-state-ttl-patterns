@@ -1,6 +1,5 @@
 package dev.thriving.poc;
 
-import dev.thriving.poc.avro.BaggageTracking;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
@@ -23,7 +22,8 @@ public class LazySerde<T> implements Serde<LazySerde.Lazy<T>> {
 
     @Override
     public Deserializer<Lazy<T>> deserializer() {
-        return (topic, data) -> new Lazy<>(data, (t, d) -> innerSerde.deserializer().deserialize(t, d));
+        return (topic, data) ->
+                new Lazy<>(data, (t, d) -> innerSerde.deserializer().deserialize(t, d));
     }
 
     public static class Lazy<T> {
@@ -49,9 +49,7 @@ public class LazySerde<T> implements Serde<LazySerde.Lazy<T>> {
             return cachedValue.orElse(null);
         }
 
-        public boolean isPresent() {
-            return cachedValue.isPresent();
-        }
+        public boolean isPresent() { return cachedValue.isPresent(); }
     }
 
     @Override

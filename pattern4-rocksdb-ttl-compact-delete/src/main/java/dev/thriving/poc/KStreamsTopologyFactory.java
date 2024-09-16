@@ -11,8 +11,6 @@ import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.state.Stores;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.Map;
@@ -22,7 +20,7 @@ import java.util.Map;
 public class KStreamsTopologyFactory {
 
     private static final String INPUT_TOPIC = "baggage-tracking";
-    static final String STATE_STORE = "some-store";
+    static final String STATE_STORE = "baggage-tracking";
 
     @Singleton
     KStream<String, BaggageTracking> exampleStream(ConfiguredStreamBuilder builder) {
@@ -47,7 +45,7 @@ public class KStreamsTopologyFactory {
         KStream<String, BaggageTracking> stream = builder.stream(INPUT_TOPIC);
 
         stream.peek((k, v) -> log.info("peek {}:{}", k, v))
-                .process(ProcessorWithStoreKeysLogging::new, STATE_STORE);
+                .process(PersistToStoreProcessor::new, STATE_STORE);
 
         return stream;
     }

@@ -2,6 +2,8 @@ package dev.thriving.poc;
 
 import dev.thriving.poc.avro.UserFlightBooking;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.header.Headers;
+import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
@@ -31,13 +33,23 @@ public class ProcessorWithTTLCleanup extends ContextualProcessor<String, UserFli
             log.debug("persisting record {}:{}", record.key(), record.value());
             store.put(record.key(), record.value());
         }
-        context().forward(record);
+        safeForward(context(), record);
     }
 
 //    @Override
-//    public void process(Record<String, UserFlightBooking> record) {   // basically the same as above...
+//    // PS: this behaves the same as above, deleting for null values...
+//    public void process(Record<String, UserFlightBooking> record) {
 //        store.put(record.key(), record.value());
 //        context().forward(record);
 //    }
 
+
+    public static <K, V> void safeForward(ProcessorContext<K, V> context, Record<K, V> record) {
+        // Defensive copy of headers to avoid shared references and side effects
+        Headers newHeaders = new RecordHeaders(record.headers());
+
+        // Create a new Record with the copied headers and forward it
+        Record<K, V> newRecord = new Record<>(record.key(), record.value(), record.timestamp(), newHeaders);
+        context.forward(newRecord);
+    }
 }

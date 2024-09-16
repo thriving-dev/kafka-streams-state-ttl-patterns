@@ -1,41 +1,28 @@
 # kafka-streams-state-ttl-patterns
 
-TODO
+Example implementations of different TTL Patterns in Kafka Streams.
+
+Code from this repository was featured on [Current 2024](https://current.confluent.io/).
+
+You can find slides and more information on: https://thriving.dev/talks/patterns-to-limit-kafka-streams-store-sizes-2024
+
+### Talk Abstract
+The delivery service startup OPS (Otter Parcel Service) is efficiently managing its fulfillment process.
+
+A team of skilled otters had written a small but mighty fleet of Kafka Streams topologies, and soon OPS was serving its first customers. All data streams ran smoothly, and operators and clients tracked parcel movements in real-time. Everyone was happy, and OPS was on the road to success.
+
+But with the business growing, the otters started to notice the applications getting more and more unwieldy to operate by the day, and infrastructure costs kept increasing. The experienced otter team also knew the reason for that. Their streams state is growing larger and larger over time. The very first fulfilled delivery, which was completed six months back and idling away, is still in the state stores.
+
+Join the otters in tackling this tech debt story to
+- understand the implications and causes for the deterioration of operations
+- find a solution to keep only the data that is still needed (unfulfilled deliveries)
+- learn about different patterns to purge or evict entries from state stores and KTables, such as TTL-based cleanup to expire data
+- review, evaluate, and compare implementations
+
+Are you curious if the team can solve their problem and which strategy will prevail? See you at my session, fellow otter 🦦!
+
+(Although this story is a work of fiction, the use cases and solutions presented are based on real-world examples.)
 
 
-## Micronaut 4.6.0 Documentation
-
-- [User Guide](https://docs.micronaut.io/4.6.0/guide/index.html)
-- [API Reference](https://docs.micronaut.io/4.6.0/api/index.html)
-- [Configuration Reference](https://docs.micronaut.io/4.6.0/guide/configurationreference.html)
-- [Micronaut Guides](https://guides.micronaut.io/index.html)
----
-
-- [Micronaut Gradle Plugin documentation](https://micronaut-projects.github.io/micronaut-gradle-plugin/latest/)
-- [GraalVM Gradle Plugin documentation](https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html)
-- [Shadow Gradle Plugin](https://plugins.gradle.org/plugin/com.github.johnrengelman.shadow)
-## Feature kafka documentation
-
-- [Micronaut Kafka Messaging documentation](https://micronaut-projects.github.io/micronaut-kafka/latest/guide/index.html)
-
-
-## Feature micronaut-aot documentation
-
-- [Micronaut AOT documentation](https://micronaut-projects.github.io/micronaut-aot/latest/guide/)
-
-
-## Feature serialization-jackson documentation
-
-- [Micronaut Serialization Jackson Core documentation](https://micronaut-projects.github.io/micronaut-serialization/latest/guide/)
-
-
-## Feature kafka-streams documentation
-
-- [Micronaut Kafka Streams documentation](https://micronaut-projects.github.io/micronaut-kafka/latest/guide/index.html#kafkaStream)
-
-
-## Feature test-resources documentation
-
-- [Micronaut Test Resources documentation](https://micronaut-projects.github.io/micronaut-test-resources/latest/guide/)
-
-
+### TODOs
+- consider having all configuration inside KStreamsTopologyFactory
