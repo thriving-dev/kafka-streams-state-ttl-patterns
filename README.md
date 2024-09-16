@@ -1,10 +1,47 @@
 # kafka-streams-state-ttl-patterns
 
-Example implementations of different TTL Patterns in Kafka Streams.
+Example implementations of different TTL Patterns for Kafka Streams.
 
 Code from this repository was featured on [Current 2024](https://current.confluent.io/).
 
 You can find slides and more information on: https://thriving.dev/talks/patterns-to-limit-kafka-streams-store-sizes-2024
+
+### Local Playground
+
+#### 1. Start docker compose stack
+```bash
+docker compose up -d
+```
+
+#### 2. Build gradle project
+```bash
+./gradlew clean build
+```
+
+#### 3. Produce test data
+```bash
+./gradlew common-datagen:produceBaggageTrackingEvents
+./gradlew common-datagen:produceFlightEvents 
+./gradlew common-datagen:produceUserFlightBookingEvents 
+```
+
+#### 4. Run individual projects
+All patterns are built with micronaut, you can run them using your preferred IDE or also from command line:
+
+```bash
+./gradlew pattern1-iterate-all-delete:run
+```
+
+**Note:** There might be secondary tasks, e.g. for pattern7
+```bash
+./gradlew pattern7-data-expiry-job-consumer:runStateStoreDateEvictionJob
+```
+
+#### 5. Tear down docker compose stack
+``` bash
+docker compose down
+```
+
 
 ### Talk Abstract
 The delivery service startup OPS (Otter Parcel Service) is efficiently managing its fulfillment process.

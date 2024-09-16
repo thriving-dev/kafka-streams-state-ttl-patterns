@@ -21,3 +21,24 @@ java {
     sourceCompatibility = JavaVersion.toVersion("21")
     targetCompatibility = JavaVersion.toVersion("21")
 }
+
+tasks {
+    register<JavaExec>("produceBaggageTrackingEvents") {
+        group = "application"
+        description = "Produces BaggageTracking test data."
+        classpath = sourceSets["main"].runtimeClasspath
+        mainClass.set("dev.thriving.poc.BaggageTrackingProducer")
+    }
+    register<JavaExec>("produceFlightEvents") {
+        group = "application"
+        description = "Produces Flight test data."
+        classpath = sourceSets["main"].runtimeClasspath
+        mainClass.set("dev.thriving.poc.FlightProducer")
+    }
+    register<JavaExec>("produceUserFlightBookingEvents") {
+        group = "application"
+        description = "Produces UserFlightBooking test data."
+        classpath = sourceSets["main"].runtimeClasspath
+        mainClass.set("dev.thriving.poc.UserFlightBookingProducer")
+    }
+}

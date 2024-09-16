@@ -69,4 +69,13 @@ tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative"
     jdkVersion = "21"
 }
 
+tasks {
+    register<JavaExec>("runStateStoreDateEvictionJob") {
+        group = "application"
+        description = "Runs StateStoreDateEvictionJob."
+        classpath = sourceSets["main"].runtimeClasspath
+        mainClass.set("dev.thriving.poc.StateStoreDateEvictionJob")
+    }
+}
+
 

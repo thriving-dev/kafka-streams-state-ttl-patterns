@@ -1,3 +1,8 @@
+```bash
+# after having started the micronaut kafka-streams main app, run from repo root:
+./gradlew pattern7-data-expiry-job-consumer:runStateStoreDateEvictionJob 
+```
+
 ## Micronaut 4.6.0 Documentation
 
 - [User Guide](https://docs.micronaut.io/4.6.0/guide/index.html)
