@@ -1,7 +1,7 @@
 ---
 services:
   broker:
-    image: confluentinc/cp-kafka:7.7.1
+    image: confluentinc/cp-kafka:7.7.0
     hostname: broker
     container_name: broker
     ports:
@@ -34,7 +34,7 @@ services:
       retries: 10
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:7.7.1
+    image: confluentinc/cp-schema-registry:7.7.0
     hostname: schema-registry
     container_name: schema-registry
     depends_on:
@@ -48,7 +48,7 @@ services:
 
   kafka-create-topics:
     container_name: kafka-create-topics
-    image: confluentinc/cp-kafka:7.7.1
+    image: confluentinc/cp-kafka:7.7.0
     depends_on:
       broker:
         condition: service_healthy

@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 
 @Slf4j
-public class StateStoreDateEvictionJob {
+public class StateStoreDataEvictionJob {
 
     private static String CHANGELOG_TOPIC = "pattern7-data-expiry-job-consumer-flights-changelog"; // Replace with your topic name
     private static String ORIGINAL_TOPIC = "flight"; // Replace with your topic name

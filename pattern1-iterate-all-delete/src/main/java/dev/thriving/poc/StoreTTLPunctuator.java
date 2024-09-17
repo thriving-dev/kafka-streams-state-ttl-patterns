@@ -14,8 +14,8 @@ import java.util.ArrayList;
 @Slf4j
 public class StoreTTLPunctuator implements Punctuator {
 
-    private final KeyValueStore<String, UserFlightBooking> store;
     private final ProcessorContext<String, UserFlightBooking> context;
+    private final KeyValueStore<String, UserFlightBooking> store;
 
     public StoreTTLPunctuator(ProcessorContext<String, UserFlightBooking> context,
                               KeyValueStore<String, UserFlightBooking> store) {
